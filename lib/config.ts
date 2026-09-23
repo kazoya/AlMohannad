@@ -36,6 +36,7 @@ export const siteConfig = {
   addressAr: "مدينة الملك عبدالله الثاني الصناعية، سحاب، الأردن",
   promiseAr: "طلب أكواب وتعبئة يُغلق بالواتساب بعد أن يرى مدير المبيعات كتالوج ومسار تسعير واضح",
   developer: {
+    whatsappPhone: "962787523192",
     nameAr: "م. صهيب عسراوي",
     email: "suhaib@muqasa-jo.com",
     prefill: "المهند بلاستيك",
@@ -106,16 +107,40 @@ export function getDeveloperEmail(): string {
   return readPublic("NEXT_PUBLIC_DEVELOPER_EMAIL") || siteConfig.developer.email;
 }
 
+export function getDeveloperWhatsAppPhone(): string {
+  const raw =
+    readPublic("NEXT_PUBLIC_DEVELOPER_WHATSAPP") ||
+    siteConfig.developer.whatsappPhone ||
+    "962787523192";
+  return raw.replace(/[^\d]/g, "");
+}
+
+export function getDeveloperWhatsAppDisplay(): string {
+  const digits = getDeveloperWhatsAppPhone();
+  if (!digits) return "";
+  return `+${digits}`;
+}
+
+export function getDeveloperWhatsAppUrl(extra = ""): string {
+  const phone = getDeveloperWhatsAppPhone();
+  if (!phone) return "";
+  const text = extra.trim();
+  if (!text) return `https://wa.me/${phone}`;
+  return `https://wa.me/${phone}?text=${encodeURIComponent(text)}`;
+}
+
 export function getDeveloperQrValue(): string {
-  const email = getDeveloperEmail();
-  if (!email) return "";
-  const subject = encodeURIComponent(`منصة ${siteConfig.developer.prefill}`);
-  return `mailto:${email}?subject=${subject}`;
+  return getDeveloperWhatsAppUrl(
+    `مرحبا م. صهيب — بخصوص منصة ${siteConfig.developer.prefill}`,
+  );
 }
 
 export function getDeveloperMailtoUrl(): string {
   return getDeveloperQrValue();
 }
+
+
+
 
 export function getSiteUrl(): string {
   const fromEnv = readPublic("NEXT_PUBLIC_SITE_URL");
